@@ -1,0 +1,58 @@
+{
+  "http": [
+    {
+      "methods": ["GET"],
+      "path": "/elements/:id",
+      "matchType": "params",
+      "contentType": "application/json",
+      "handler": "handlers/elements.js"
+    },
+    {
+      "methods": ["GET"],
+      "path": "/elements/",
+      "matchType": "string",
+      "contentType": "application/json",
+      "handler": "handlers/elements.js"
+    },
+    {
+      "methods": ["POST"],
+      "path": "/elements/?",
+      "matchType": "regex",
+      "contentType": "application/json",
+      "handler": "handlers/elements.js"
+    },
+    {
+      "method": "GET",
+      "path": "/amino-acids",
+      "matchType": "string",
+      "contentType": "application/json",
+      "static": "static/amino-acids.json"
+    },
+    {
+      "method": "GET",
+      "path": "/nucleotides/A,G",
+      "matchType": "string",
+      "contentType": "application/json",
+      "inline": [
+        {
+          "name": "cytosine",
+          "symbols": "C",
+          "location": ["dna","rna"]
+        },
+        {
+          "name": "guanine",
+          "symbols": "G",
+          "location": ["dna","rna"]
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/nucleotides/:symbol",
+      "matchType": "params",
+      "contentType": "application/json",
+      "static": "static/nucleotides.yaml",
+      "index": true
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "http": [
+    {
+      "method": "get",
+      "path": "/",
+      "matchType": "string",
+      "contentType": "text/html",
+      "inline": "<b>index</b>"
+    },
+    {
+      "method": "get",
+      "path": "/hello-text",
+      "matchType": "string",
+      "contentType": "text/plain",
+      "inline": "hello-text"
+    },
+    {
+      "method": "get",
+      "path": "/user/1",
+      "matchType": "string",
+      "contentType": "text/html",
+      "inline": {
+        "id": 1,
+        "name": "foo"
+      }
+    },
+    {
+      "method": "get",
+      "path": "/pets/:id",
+      "matchType": "params",
+      "contentType": "application/json",
+      "inline": [
+        {
+          "id": 1,
+          "type": "parrot",
+          "name": "Chippy"
+        },
+        {
+          "id": 2,
+          "type": "pig",
+          "name": "Harry"
+        },
+        {
+          "id": 3,
+          "type": "mouse",
+          "name": "Timmy"
+        }
+      ],
+      "index": true
+    }
+  ]
+}

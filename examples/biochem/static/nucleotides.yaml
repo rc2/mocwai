@@ -1,0 +1,25 @@
+- name: adenine
+  symbol: A
+  type: purine
+  pair: uracil/thymine
+  location: [dna, rna]
+- name: uracil
+  symbol: U
+  type: pyrimidine
+  pair: adenine
+  location: [rna]
+- name: thymine
+  symbol: T
+  type: pyrimidine
+  pair: adenine
+  location: [dna]
+- name: cytosine
+  symbol: C
+  type: pyrimidine
+  pair: guanine
+  location: [dna, rna]
+- name: guanine
+  symbol: G
+  type: purine
+  pair: cytosine
+  location: [dna, rna]

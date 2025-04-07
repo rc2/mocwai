@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "mocwai config",
+  "type": "object",
+  "properties": {
+    "http": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
+            },
+            "minItems": 1
+          },
+          "path": { "type": "string" },
+          "matchType": {
+            "type": "string",
+            "enum": ["string", "regex", "params"],
+            "default": "string"
+          },
+          "contentType": { "type": "string" },
+          "static": { "type": "string" },
+          "handler": { "type": "string" },
+          "inline": true,
+          "index": {
+              "type": "boolean"
+          }
+        },
+        "allOf": [
+          {
+            "oneOf": [
+              { "required": ["method"] },
+              { "required": ["methods"] }
+            ]
+          },
+          {
+            "oneOf": [
+              { "required": ["static"] },
+              { "required": ["handler"] },
+              { "required": ["inline"] }
+            ]    
+          },
+          {
+            "if": {
+              "required": ["index"]
+            },
+            "then": {
+              "anyOf": [
+                { "required": ["inline"] },
+                { "required": ["static"] }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "socket": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["direction", "event"],
+        "properties": {
+          "direction": {
+            "type": "string",
+            "enum": ["inbound", "outbound"]
+          },
+          "event": { "type": "string" },
+          "matchType": {
+            "type": "string",
+            "enum": ["string", "regex"],
+            "default": "string"
+          },
+          "handler": {
+            "type": "string" }
+        },
+        "if": {
+          "properties": { "direction": { "const": "inbound" } }
+        },
+        "then": {
+          "required": ["handler"]
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
