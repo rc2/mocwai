@@ -1,0 +1,272 @@
+[
+  {
+    "name": "glycine",
+    "symbol": "G",
+    "abbreviation": "GLY",
+    "attributes": [
+      "non-polar"
+    ],
+    "codons": [
+      "GGG",
+      "GGA",
+      "GGC",
+      "GGT"
+    ]
+  },
+  {
+    "name": "alanine",
+    "symbol": "A",
+    "abbreviation": "ALA",
+    "attributes": [
+      "aliphatic"
+    ],
+    "codons": [
+      "GCG",
+      "GCA",
+      "GCC",
+      "GCT"
+    ]
+  },
+  {
+    "name": "valine",
+    "symbol": "V",
+    "abbreviation": "VAL",
+    "attributes": [
+      "aliphatic"
+    ],
+    "codons": [
+      "GTG",
+      "GTA",
+      "GTC",
+      "GTT"
+    ]
+  },
+  {
+    "name": "leucine",
+    "symbol": "L",
+    "abbreviation": "LEU",
+    "attributes": [
+      "aliphatic"
+    ],
+    "codons": [
+      "TTG",
+      "TTA",
+      "CTG",
+      "CTA",
+      "CTC",
+      "CTT"
+    ]
+  },
+  {
+    "name": "isoleucine",
+    "symbol": "I",
+    "abbreviation": "ILE",
+    "attributes": [
+      "aliphatic"
+    ],
+    "codons": [
+      "ATA",
+      "ATC",
+      "ATT"
+    ]
+  },
+  {
+    "name": "methionine",
+    "symbol": "M",
+    "abbreviation": "MET",
+    "attributes": [
+      "sulfur-containing",
+      "start"
+    ],
+    "codons": [
+      "ATG"
+    ]
+  },
+  {
+    "name": "phenylalanine",
+    "symbol": "F",
+    "abbreviation": "PHE",
+    "attributes": [
+      "aromatic"
+    ],
+    "codons": [
+      "TTT",
+      "TTC"
+    ]
+  },
+  {
+    "name": "tyrosine",
+    "symbol": "Y",
+    "abbreviation": "TYR",
+    "attributes": [
+      "aromatic",
+      "polar"
+    ],
+    "codons": [
+      "TAT",
+      "TAC"
+    ]
+  },
+  {
+    "name": "tryptophan",
+    "symbol": "W",
+    "abbreviation": "TRP",
+    "attributes": [
+      "aromatic"
+    ],
+    "codons": [
+      "TGG"
+    ]
+  },
+  {
+    "name": "serine",
+    "symbol": "S",
+    "abbreviation": "SER",
+    "attributes": [
+      "polar",
+      "hydroxyl"
+    ],
+    "codons": [
+      "TCG",
+      "TCA",
+      "TCC",
+      "TCT",
+      "AGC",
+      "AGT"
+    ]
+  },
+  {
+    "name": "threonine",
+    "symbol": "T",
+    "abbreviation": "THR",
+    "attributes": [
+      "polar",
+      "hydroxyl"
+    ],
+    "codons": [
+      "ACG",
+      "ACA",
+      "ACC",
+      "ACT"
+    ]
+  },
+  {
+    "name": "cysteine",
+    "symbol": "C",
+    "abbreviation": "CYS",
+    "attributes": [
+      "sulfur-containing",
+      "polar"
+    ],
+    "codons": [
+      "TGT",
+      "TGC"
+    ]
+  },
+  {
+    "name": "proline",
+    "symbol": "P",
+    "abbreviation": "PRO",
+    "attributes": [
+      "cyclic",
+      "non-polar"
+    ],
+    "codons": [
+      "CCG",
+      "CCA",
+      "CCC",
+      "CCT"
+    ]
+  },
+  {
+    "name": "asparagine",
+    "symbol": "N",
+    "abbreviation": "ASN",
+    "attributes": [
+      "polar",
+      "amide"
+    ],
+    "codons": [
+      "AAT",
+      "AAC"
+    ]
+  },
+  {
+    "name": "glutamine",
+    "symbol": "Q",
+    "abbreviation": "GLN",
+    "attributes": [
+      "polar",
+      "amide"
+    ],
+    "codons": [
+      "CAA",
+      "CAG"
+    ]
+  },
+  {
+    "name": "aspartic acid",
+    "symbol": "D",
+    "abbreviation": "ASP",
+    "attributes": [
+      "acidic"
+    ],
+    "codons": [
+      "GAT",
+      "GAC"
+    ]
+  },
+  {
+    "name": "glutamic acid",
+    "symbol": "E",
+    "abbreviation": "GLU",
+    "attributes": [
+      "acidic"
+    ],
+    "codons": [
+      "GAA",
+      "GAG"
+    ]
+  },
+  {
+    "name": "lysine",
+    "symbol": "K",
+    "abbreviation": "LYS",
+    "attributes": [
+      "basic"
+    ],
+    "codons": [
+      "AAA",
+      "AAG"
+    ]
+  },
+  {
+    "name": "arginine",
+    "symbol": "R",
+    "abbreviation": "ARG",
+    "attributes": [
+      "basic"
+    ],
+    "codons": [
+      "CGG",
+      "CGA",
+      "CGC",
+      "CGT",
+      "AGA",
+      "AGG"
+    ]
+  },
+  {
+    "name": "histidine",
+    "symbol": "H",
+    "abbreviation": "HIS",
+    "attributes": [
+      "basic",
+      "aromatic"
+    ],
+    "codons": [
+      "CAT",
+      "CAC"
+    ]
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "http": [
+    {
+      "method": "GET",
+      "path": "^/api/user/[0-9]+$",
+      "matchType": "regex",
+      "contentType": "application/json",
+      "handler": "handlers/user.js"
+    },
+    {
+      "methods": ["GET"],
+      "path": "/api/user/:id",
+      "matchType": "params",
+      "contentType": "application/json",
+      "handler": "handlers/users.js"
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "matchType": "string",
+      "contentType": "text/html",
+      "inline": "<b>hello</b>",
+      "index": true
+    }
+  ],
+  "socket": [
+    {
+      "direction": "inbound",
+      "event": "^chat:.*$",
+      "matchType": "regex",
+      "handler": "handlers/chat.js"
+    },
+    {
+      "direction": "outbound",
+      "event": "system:ping"
+    }
+  ]
+}

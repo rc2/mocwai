@@ -1,0 +1,39 @@
+{
+  "name": "mocwai",
+  "author": "github.com/rc2",
+  "license": "MIT",
+  "version": "1.1.0",
+  "description": "mocwai is a quick mocking server for HTTP and Socket.IO. For dev, test, and prototyping",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rc2/mocwai"
+  },
+  "bin": {
+    "mocwai": "./main.js"
+  },
+  "type": "commonjs",
+  "scripts": {
+    "cli": "node ./main.js",
+    "test": "uvu"
+  },
+  "dependencies": {
+    "ajv": "^8.17.1",
+    "commander": "^13.1.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "js-yaml": "^4.1.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "uvu": "^0.5.6"
+  },
+  "files": [
+    "README.md",
+    "LICENSE",
+    "main.js",
+    "lib/schema/validate.js",
+    "lib/util.js",
+    "lib/schema/data/schema.json"
+  ]
+}
