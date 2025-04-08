@@ -61,7 +61,8 @@ Serve a static file from disk.
 Respond directly with the raw value provided in the config.
 - Accepts JSON-compatible types: object, array, number, string, boolean.
 
-  
+### Indexing static/inline data
+
 For "static" and "inline" types you can add the `index: true` key to `static` or `inline` entries when using `matchType: "params"` to automatically index array data by path param.
 
 Example:
