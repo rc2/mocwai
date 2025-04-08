@@ -1,0 +1,10 @@
+{
+  "http": [
+    {
+      "method": "GET",
+      "path": "/",
+      "matchType": "string",
+      "static": "static/site"
+    }
+  ]
+}

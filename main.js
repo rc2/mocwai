@@ -189,20 +189,31 @@ program
           } else {
             let payload = null;
             if (!!route.static) {
-              const raw = fs.readFileSync(path.resolve(configFolder, route.static));
-              switch (route.contentType) {
-                case "application/json":
-                case "application/yaml":
-                case "application/x-yaml":
-                  payload = yaml.load(raw.toString());
-                break;
-                default:
-                  if (isText(route.contentType)) {
-                    payload = raw.toString();
-                  } else {
-                    payload = raw;
-                  }
-                break;
+              const staticPath = path.resolve(configFolder, route.static);
+              const stats = fs.statSync(staticPath);
+              if (stats.isDirectory()) {
+                console.info(`registering static folder route`, {method, path: route.static});
+                app.use(
+                  route.path,
+                  express.static(staticPath)
+                );
+                return;
+              } else {
+                const raw = fs.readFileSync(staticPath);
+                switch (route.contentType) {
+                  case "application/json":
+                  case "application/yaml":
+                  case "application/x-yaml":
+                    payload = yaml.load(raw.toString());
+                  break;
+                  default:
+                    if (isText(route.contentType)) {
+                      payload = raw.toString();
+                    } else {
+                      payload = raw;
+                    }
+                  break;
+                }
               }
             } else if (!!route.inline) {
               // inline base64 with mimetype

@@ -2,7 +2,7 @@
   "name": "mocwai",
   "author": "github.com/rc2",
   "license": "MIT",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "mocwai is a quick mocking server for HTTP and Socket.IO. For dev, test, and prototyping",
   "repository": {
     "type": "git",

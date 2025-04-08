@@ -80,6 +80,18 @@ Example:
 ```
 This builds an index by `id`. Requests to `/things` return the full array, while `/things/:id` returns a single item matched to th key "id".
 
+### Serving folders
+
+```json
+{
+  "method": "GET",
+  "matchType": "string",
+  "path": "/",
+  "static": "folder-path"
+}
+```
+> see *examples/folders*
+
 ---
 
 ## Quick Run Down for Socket.IO
