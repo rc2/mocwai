@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const fs = require("fs");
-const path = require("path");
+const pathlib = require("path");
 const readline = require("readline");
 
 const express = require("express");
@@ -12,7 +12,7 @@ const yaml = require("js-yaml");
 const { Command } = require("commander");
 const Ajv = require("ajv");
 
-const packageJson = require(path.join(__dirname, "package.json"));
+const packageJson = require(pathlib.join(__dirname, "package.json"));
 
 const { getVarsFromParamsPath, isText } = require("./lib/util");
 const validate = require('./lib/schema/validate');
@@ -36,9 +36,9 @@ program
   .option("-c, --config <path>", "path to config JSON file", "")
   .action(({ address, config }) => {
     const [host, port] = address.split(":");
-    const configPath = path.resolve(config);
+    const configPath = pathlib.resolve(config);
     const configData = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-    const configFolder = path.dirname(configPath);
+    const configFolder = pathlib.dirname(configPath);
 
     const result = validate(configData);
     if (!result.pass) {
@@ -83,13 +83,13 @@ program
 
     // integrity check
     httpRoutes.forEach((route, index) => {
-      if (!!route.static && !fs.existsSync(path.join(configFolder, route.static))) {
+      if (!!route.static && !fs.existsSync(pathlib.join(configFolder, route.static))) {
         console.error(
           `static path for route[${index}] does not exist: ${route.static}`
         );
         process.exit(-1);
       }
-      if (!!route.handler && !fs.existsSync(path.join(configFolder, route.handler))) {
+      if (!!route.handler && !fs.existsSync(pathlib.join(configFolder, route.handler))) {
         console.error(
           `handler path for route[${index}] does not exist ${route.handler}`
         );
@@ -120,11 +120,11 @@ program
       methods.forEach((method) => {
         if (!!route.handler) {
           if (!handlerCache[route.handler]) {
-            handlerCache[route.handler] = require(path.join(configFolder, route.handler));
+            handlerCache[route.handler] = require(pathlib.join(configFolder, route.handler));
           }
           // registering route
-          console.info("registering route with user defined handler", {method, path, contentType: route.contentType});
           paths.forEach(path => {
+            console.info("registering route with user defined handler", {method, path, contentType: route.contentType});
             if (!!route.contentType) {
               app[method](path, (req, res, next) => {
                 res.setHeader('Content-Type', route.contentType);
@@ -147,7 +147,7 @@ program
               process.exit(-1);
             }
             if (!!route.static) {
-              items = yaml.load(fs.readFileSync(path.resolve(configFolder, route.static)).toString());
+              items = yaml.load(fs.readFileSync(pathlib.resolve(configFolder, route.static)).toString());
             } else if (!!route.inline) {
               items = route.inline;
             }
@@ -189,7 +189,7 @@ program
           } else {
             let payload = null;
             if (!!route.static) {
-              const staticPath = path.resolve(configFolder, route.static);
+              const staticPath = pathlib.resolve(configFolder, route.static);
               const stats = fs.statSync(staticPath);
               if (stats.isDirectory()) {
                 console.info(`registering static folder route`, {method, path: route.static});
@@ -272,7 +272,7 @@ program
 
         const isRegex = entry.matchType === "regex";
         const matcher = isRegex ? new RegExp(entry.event) : entry.event;
-        const handlerPath = path.resolve(__dirname, "socket", entry.handler);
+        const handlerPath = pathlib.resolve(__dirname, "socket", entry.handler);
         const handlerModule = require(handlerPath);
 
         socket.onAny((event, data) => {
@@ -296,7 +296,7 @@ program
   .argument("<path>", "config file path")
   .action((configPath) => {
     const ajv = new Ajv({ allErrors: true, useDefaults: true });
-    const schema = require(path.join(
+    const schema = require(pathlib.join(
       __dirname,
       "lib",
       "schema",
