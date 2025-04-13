@@ -1,11 +1,21 @@
 {
   "http": [
     {
+      "method": "GET",
+      "path": "/hello",
+      "matchType": "string",
+      "contentType": "text/plain",
+      "inline": "hello"
+    },
+    {
       "methods": ["GET"],
       "path": "/elements/:id",
       "matchType": "params",
       "contentType": "application/json",
-      "handler": "handlers/elements.js"
+      "handler": "handlers/elements.js",
+      "assets": [
+        "handlers/elements.yaml"
+      ]
     },
     {
       "methods": ["GET"],
@@ -23,10 +33,11 @@
     },
     {
       "method": "GET",
-      "path": "/amino-acids",
-      "matchType": "string",
+      "path": "/amino-acids/:symbol",
+      "matchType": "params",
       "contentType": "application/json",
-      "static": "static/amino-acids.json"
+      "static": "static/amino-acids.json",
+      "index": true
     },
     {
       "method": "GET",

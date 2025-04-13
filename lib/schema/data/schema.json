@@ -29,6 +29,7 @@
           "contentType": { "type": "string" },
           "static": { "type": "string" },
           "handler": { "type": "string" },
+          "assets": { "type": "array", "items": {"type": "string"}},
           "inline": true,
           "index": {
               "type": "boolean"
