@@ -9,7 +9,7 @@
 
 ## Summary
 
-It operates off of a config file, supports serving static assets, inline data, supports automatic simple indexing of json/yaml data, as well as custom javascript handlers for more advanced use cases. Support for http and socket.io.
+It operates off of a config file, supports serving static assets, inline data, supports automatic simple indexing of json/yaml data, as well as custom javascript handlers for more advanced use cases. Support for http and socket.io. Watches route for changes and reloads on change (using `--watch` switch).
 
 ---
 
