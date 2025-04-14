@@ -31,6 +31,11 @@ mocwai validate <path-to-config>
 mocwai serve -c <path-to-config> [-a HOST:PORT] # Default: localhost:8080
 ```
 
+### Start Mock Server and Watch for Changes
+```bash
+mocwai serve -c <path-to-config> [-a HOST:PORT] --watch
+```
+
 After starting the server, mocwai drops you into an interactive shell where you can manually control socket behavior:
 
 - `send <eventName> <payload>` — manually emit a socket.io message to all clients.
@@ -88,6 +93,24 @@ This builds an index by `id`. Requests to `/things` return the full array, while
   "matchType": "string",
   "path": "/",
   "static": "folder-path"
+}
+```
+> see *examples/folders*
+
+### Adding files not found by file watcher
+
+When executed in watch mode via `--watch`, all files referenced in "static" or "handler" routes will be monitored for changes and upon change, cause the server to reload all routes. This works nicely most of the time, but this may miss some files when using "handler" type routes. While the handler itself is tracked for changes, assets it uses will not be tracked (for example data that it relies on). To track assets used by the handler for changes, use the "assets" key and provide an array of the additional paths you would like to monitor for changes. Technically, the assets don't have to be related to your handler.
+
+```json5
+{
+  "method": "GET",
+  "matchType": "params",
+  "path": "/widgets/:name",
+  "handler": "./my-handler/main.js", // in this case ./main.js relies on ./data.json
+  "assets": [
+    "./my-handler/data.json",
+    "../some/possibly/related/file.txt"
+  ]
 }
 ```
 > see *examples/folders*
