@@ -59,6 +59,7 @@ program
         console.log(`👀 watching ${path} for changes`);
       });
       const watcher = chokidar.watch([conf.folder, ...conf.paths], { ignoreInitial: true });
+      watcher.setMaxListeners(Infinity);
       watcher.on("all", (event, filePath) => {
         console.log(`📄 file ${event}: ${filePath}`);
         start();
