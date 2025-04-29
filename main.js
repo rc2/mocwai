@@ -95,11 +95,19 @@ program
 
 function serve({ host, port, conf }) {
 
+  const corsConfig = {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD', 'CONNECT', 'TRACE'],
+    allowedHeaders: ['*'],
+    credentials: false
+  };
   const app = express();
   const server = http.createServer(app);
-  const io = socketIo(server);
+  const io = socketIo(server, {
+    cors: corsConfig,
+  });
 
-  app.use(cors());
+  app.use(cors(corsConfig));
   app.use(express.json());
 
   app.use((req, res, next) => {
