@@ -32,7 +32,6 @@
       "handler": "handlers/elements.js"
     },
     {
-      "method": "GET",
       "path": "/amino-acids/:symbol",
       "matchType": "params",
       "contentType": "application/json",
@@ -58,7 +57,6 @@
       ]
     },
     {
-      "method": "GET",
       "path": "/nucleotides/:symbol",
       "matchType": "params",
       "contentType": "application/json",

@@ -16,7 +16,8 @@ It operates off of a config file, supports serving static assets, inline data, s
 
 ## Considerations
 
-- When using custom handlers in mocwai within an ESM project (i.e. `{type: "module"}`) you must use `.cjs` extension
+- When using custom handlers in mocwai within an ESM project (i.e. `{type: "module"}`) you must use `.cjs` extension.
+- Indexed endpoints do not need to define method/methods. They automatically receive GET, POST, PATCH, PUT, and DELETE.
 
 ---
 
@@ -81,7 +82,6 @@ For "static" and "inline" types you can add the `index: true` key to `static` or
 Example:
 ```json
 {
-  "method": "GET",
   "matchType": "params",
   "path": "/things/:id",
   "index": true,
@@ -91,7 +91,15 @@ Example:
   ]
 }
 ```
-This builds an index by `id`. Requests to `/things` return the full array, while `/things/:id` returns a single item matched to th key "id".
+- This builds an index by `id`. Requests to `/things` return the full array, while `/things/:id` returns a single item matched to th key "id". 
+- The following endpoints will be provided automatically:
+  - GET /things
+  - POST /things
+  - PUT /things/:id
+  - PATCH patch /things/:id
+  - DELETE /things/:id
+- The updated inline/static data (from POST/PUT/PATCH/DELETE) will NOT persist across restarts.
+---
 
 ### Serving folders
 

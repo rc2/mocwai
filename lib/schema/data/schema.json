@@ -37,10 +37,17 @@
         },
         "allOf": [
           {
-            "oneOf": [
-              { "required": ["method"] },
-              { "required": ["methods"] }
-            ]
+            "if": {
+              "not": {
+                "properties": { "index": { "const": true } }
+              }
+            },
+            "then": {
+              "oneOf": [
+                { "required": ["method"] },
+                { "required": ["methods"] }
+              ]
+            }
           },
           {
             "oneOf": [

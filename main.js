@@ -163,20 +163,20 @@ function serve({ host, port, conf }) {
   });
 
   httpRoutes.forEach((route) => {
-    const methods = (Array.isArray(route.methods)
+    const methods = !route.index ? ((!!route.methods && Array.isArray(route.methods)
       ? route.methods
-      : [route.method]).map(m=>m.toLowerCase());
+      : [route.method]).map(m=>m.toLowerCase())) : [];
     let paths = [
       route.matchType === "regex" ? new RegExp(route.path) : route.path
     ];
 
-    methods.forEach((method) => {
-      if (!!route.handler) {
-        if (!handlerCache[route.handler]) {
-          const handlerPath = pathlib.join(conf.folder, route.handler);
-          delete require.cache[require.resolve(handlerPath)];
-          handlerCache[route.handler] = require(handlerPath);
-        }
+    if (!!route.handler) {
+      if (!handlerCache[route.handler]) {
+        const handlerPath = pathlib.join(conf.folder, route.handler);
+        delete require.cache[require.resolve(handlerPath)];
+        handlerCache[route.handler] = require(handlerPath);
+      }
+      methods.forEach(method => {
         // registering route
         paths.forEach(path => {
           console.info("✅ registering route with user defined handler", {method, path, contentType: route.contentType});
@@ -190,61 +190,142 @@ function serve({ host, port, conf }) {
               await handlerCache[route.handler][method](req, res, next);
             });
           }
-        })
-      } else if (!!route.static || !!route.inline) {
-        const routeType = !!route.static ? "static" : "inline";
-        if (!!route.index) {
-          const index = {};
-          let varnames = [];
-          let items = null;
-          try {
-            varnames = getVarsFromParamsPath(route.path);
-          } catch (e) {
-            console.error(`could not extract vars from path "${route.path}"`);
-            process.exit(-1);
-          }
-          if (!!route.static) {
-            items = yaml.load(fs.readFileSync(pathlib.resolve(conf.folder, route.static)).toString());
-          } else if (!!route.inline) {
-            items = route.inline;
-          }
-          // build the index
-          if (!Array.isArray(items)) {
-            console.error(`only array's are indexable`);
-            process.exit(-1);
-          }
-          // build index
-          items.forEach((item) => {
-            const key = varnames.map((varname) => item[varname]); // extract related values to get the key
-            index[key] = item;
-          });
-          // add a list endpoint
-          if (varnames.length == 1) { // like "/some/path/:varname" not "/some/path/:varname1/and/:varname2"
-            paths.push(route.path.replace(':' + varnames[0], ''));
-          }
-          const routeHandlerFunc = (req, res, next) => {
-            if (!!route.contentType) {
-              res.setHeader('Content-Type', route.contentType);
-            }
-            if (Object.keys(req.params).length > 0) {
-              const key = varnames.map((varname) => req.params[varname]); // get the key
-              const item = index[key];
-              if (!item) {
-                res.status(404).send(null);
-              } else {
-                res.status(200).send(JSON.stringify(item, null, 2));
-              }
-            } else {
-              res.status(200).send(JSON.stringify(items, null, 2));
-            }
+        });
+      });
+    } else if (!!route.static || !!route.inline) {
+      const routeType = !!route.static ? "static" : "inline";
+      if (!!route.index) {
+        const index = {};
+        let varnames = [];
+        let items = null;
+        try {
+          varnames = getVarsFromParamsPath(route.path);
+        } catch (e) {
+          console.error(`could not extract vars from path "${route.path}"`);
+          process.exit(-1);
+        }
+        if (!!route.static) {
+          items = yaml.load(fs.readFileSync(pathlib.resolve(conf.folder, route.static)).toString());
+        } else if (!!route.inline) {
+          items = route.inline;
+        }
+        // build the index
+        if (!Array.isArray(items)) {
+          console.error(`only array's are indexable`);
+          process.exit(-1);
+        }
+        // build index
+        items.forEach((item, offset) => {
+          const key = varnames.map((varname) => item[varname]); // extract related values to get the key
+          index[key] = {
+            item,
+            offset, // offset into the items array
           };
-          // registering route
-          paths.forEach(path => {
-            console.info(`✅ registering ${routeType} route with index`, {method, path,  contentType: route.contentType});
-            app[method](path, routeHandlerFunc);
-          });
-        } else {
-          let payload = null;
+        });
+        // params endpoint for individual items
+        let itemEndpoint = route.path;
+        // list endpoint
+        let listEndpoint = '';
+        if (varnames.length != 1) {
+          console.error(`indexed endpoints must have only one parameter defined`);
+          process.exit(-1);
+        }
+        listEndpoint = route.path.replace(':' + varnames[0], '');
+
+        // registering get route
+        const endpoints = [
+          `get ${listEndpoint}`,
+          `post ${listEndpoint}`,
+          `get ${itemEndpoint}`,
+          `patch ${itemEndpoint}`,
+          `put ${itemEndpoint}`,
+          `delete ${itemEndpoint}`,
+        ];
+        console.info(`✅ registering ${routeType} route with index`, {endpoints,  contentType: route.contentType});
+
+        app.get(listEndpoint, (req, res, next) => {
+          if (!!route.contentType) {
+            res.setHeader('Content-Type', route.contentType);
+          }
+          res.status(200).send(JSON.stringify(items, null, 2));
+        });
+
+        app.get(itemEndpoint, (req, res, next) => {
+          if (!!route.contentType) {
+            res.setHeader('Content-Type', route.contentType);
+          }
+          const key = varnames.map((varname) => req.params[varname]); // get the key
+          const entry = index[key];
+          if (!entry) {
+            res.status(404).send(null);
+          } else {
+            const { item } = index[key];
+            if (!item) {
+              res.status(404).send(null);
+            } else {
+              res.status(200).send(JSON.stringify(item, null, 2));
+            }
+          }
+        });
+
+        app.post(listEndpoint, (req, res, next) => {
+          const item = req.body;
+          const key = varnames.map((varname) => item[varname]);
+          const exists = !!index[key];
+          if (!!exists) {
+            res.status(409).send(null); // conflict
+          } else {
+            index[key] = {item, offset: index.length};
+            items.push(item);
+            res.status(201).send(null); // created
+          }
+        });
+
+        app.patch(itemEndpoint, (req, res, next) => {
+          const modItem = req.body;
+          const key = varnames.map((varname) => modItem[varname]);
+          const exists = !!index[key];
+          if (!exists) {
+            res.status(404).send(null);
+          } else {
+            const oldItem = index[key].item;
+            const item = Object.assign(oldItem, modItem); // overwrite props from new onto old
+            index[key].item = item;
+            items[index[key].offset] = item;
+            res.status(204).send(null);
+          }
+        });
+
+        app.put(itemEndpoint, (req, res, next) => {
+          const item = req.body;
+          const key = varnames.map((varname) => item[varname]);
+          const exists = !!index[key];
+          if (!exists) {
+            res.status(404).send(null);
+          } else {
+            index[key].item = item;
+            items[index[key].offset] = item;
+            res.status(204).send(null);
+          }
+        });
+
+        app.delete(itemEndpoint, (req, res, next) => {
+          const item = req.params;
+          const key = varnames.map((varname) => item[varname]);
+          const exists = !!index[key];
+          if (!exists) {
+            res.status(404).send(null);
+          } else {
+            const { offset } = index[key];
+            delete(index[key]);
+            items.splice(offset);
+            res.status(204).send(null);
+          }
+        });
+
+      } else {
+        let payload = null;
+        methods.forEach(method => {
           if (!!route.static) {
             const staticPath = pathlib.resolve(conf.folder, route.static);
             const stats = fs.statSync(staticPath);
@@ -315,9 +396,10 @@ function serve({ host, port, conf }) {
             console.info(`✅ registering ${routeType} route`, {method, path, contentType: route.contentType});
             app[method](path, routeHandlerFunc);
           })
-        }
+        });
       }
-    });
+    }
+
   });
 
 
