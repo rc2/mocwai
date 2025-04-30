@@ -3,6 +3,7 @@
 **mocwai** is a quick mocking server for HTTP and Socket.IO. For dev, test, and prototyping.
 
 ## Rules
+
 - Don't expose to bright light
 - Don't get it wet
 - Never feed after midnight
@@ -10,6 +11,12 @@
 ## Summary
 
 It operates off of a config file, supports serving static assets, inline data, supports automatic simple indexing of json/yaml data, as well as custom javascript handlers for more advanced use cases. Support for http and socket.io. Watches route for changes and reloads on change (using `--watch` switch).
+
+---
+
+## Considerations
+
+- When using custom handlers in mocwai within an ESM project (i.e. `{type: "module"}`) you must use `.cjs` extension
 
 ---
 
@@ -57,6 +64,7 @@ HTTP mocking supports three modes:
 Load a JavaScript file and call exported functions (`get`, `post`, etc.).
 - Can share one file across multiple routes.
 - Handler is loaded once and cached.
+- If using within an ESM project, you must name your extension `.cjs`, not `.js`.
 
 ### 2. `static`
 Serve a static file from disk.
