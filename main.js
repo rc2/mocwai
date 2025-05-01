@@ -144,27 +144,33 @@ function serve({ host, port, conf }) {
 
   // integrity check
   httpRoutes.forEach((route, index) => {
+    if (!route.index && !route.methods && !route.method) {
+      console.error(
+        `non-indexed routes must have method or methods defined; route index=${index}; route=${JSON.stringify(route)}`
+      );
+      process.exit(-1);
+          }
     if (!!route.static && !fs.existsSync(pathlib.join(conf.folder, route.static))) {
       console.error(
-        `static path for route[${index}] does not exist: ${route.static}`
+        `static path for route[${index}] does not exist: ${route.static}; route index=${index}; route=${JSON.stringify(route)}`
       );
       process.exit(-1);
     }
     if (!!route.handler && !fs.existsSync(pathlib.join(conf.folder, route.handler))) {
       console.error(
-        `handler path for route[${index}] does not exist ${route.handler}`
+        `handler path for route[${index}] does not exist ${route.handler}; route index=${index}; route=${JSON.stringify(route)}`
       );
       process.exit(-1);
     }
     if (!!route.index && route.matchType !== "params") {
       console.error(
-        `indexed routes must use matchType=="params"`
+        `indexed routes must use matchType=="params"; route index=${index}; route=${JSON.stringify(route)}`
       )
       process.exit(-1);
     }
     if (!!route.index && route.contentType !== "application/json") {
       console.error(
-        `only contentType=="application/json" is indexable`
+        `only contentType=="application/json" is indexable; route index=${index}; route=${JSON.stringify(route)}`
       )
       process.exit(-1);
     }
