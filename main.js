@@ -6,6 +6,8 @@ const readline = require("readline");
 const express = require("express");
 
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
 const http = require("http");
 const socketIo = require("socket.io");
 const yaml = require("js-yaml");
@@ -109,6 +111,7 @@ function serve({ host, port, conf }) {
 
   app.use(cors(corsConfig));
   app.use(express.json());
+app.use(cookieParser());
 
   app.use((req, res, next) => {
     req.context = { conf };
