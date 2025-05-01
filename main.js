@@ -111,28 +111,33 @@ function serve({ host, port, conf }) {
 
   app.use(cors(corsConfig));
   app.use(express.json());
-app.use(cookieParser());
+  app.use(cookieParser());
 
   app.use((req, res, next) => {
     req.context = { conf };
     next();
   });
 
-  app.use((req, res, next) => {
+  const logger = (req, res, next) => {
     process.stdout.write("\n");
+    const request = JSON.parse(JSON.stringify({
+      method: req.method,
+      path: req.path,
+      body: req.body,
+      params: req.params,
+      query: req.query,
+      headers: req.headers,
+      cookies: req.cookies,
+    }));
     console.dir(
-      {
-        method: req.method,
-        path: req.path,
-        body: req.body,
-        params: req.params,
-        query: JSON.parse(JSON.stringify(req.query)),
-      },
+      request,
       { depth: null, colors: true }
     );
     process.stdout.write("> ");
     next();
-  });
+  };
+
+  app.use(logger);
 
   const handlerCache = new Map();
   const httpRoutes = conf.data.http || [];
