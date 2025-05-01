@@ -12,18 +12,24 @@
 
 It operates off of a config file, supports serving static assets, inline data, supports automatic simple indexing of json/yaml data, as well as custom javascript handlers for more advanced use cases. Support for http and socket.io. Watches route for changes and reloads on change (using `--watch` switch).
 
+## JSON Schema
+
+- See [`./lib/schema/data/schema.json`](https://raw.githubusercontent.com/rc2/mocwai/refs/heads/master/lib/schema/data/schema.json)
+
 ---
 
 ## Considerations
 
 - When using custom handlers in mocwai within an ESM project (i.e. `{type: "module"}`) you must use `.cjs` extension.
 - Indexed endpoints do not need to define method/methods. They automatically receive GET, POST, PATCH, PUT, and DELETE.
+- Can serve headers via "headers" key.
 
 ---
 
 ## Links
 
-[![npm version](https://img.shields.io/npm/v/mocwai.svg)](https://www.npmjs.com/package/mocwai)
+- [![npm version](https://img.shields.io/npm/v/mocwai.svg)](https://www.npmjs.com/package/mocwai)
+- [JSON Schema](https://raw.githubusercontent.com/rc2/mocwai/refs/heads/master/lib/schema/data/schema.json)
 
 ---
 
@@ -101,6 +107,23 @@ Example:
 - The updated inline/static data (from POST/PUT/PATCH/DELETE) will NOT persist across restarts.
 ---
 
+### Serving headers
+
+You can serve custom headers via "headers" key.
+
+```json
+{
+  "method": "GET",
+  "matchType": "string",
+  "path": "/",
+  "inline": "ok",
+  "headers": {
+    "X-foo": "foobar"
+  }
+}
+```
+
+
 ### Serving folders
 
 ```json
@@ -170,7 +193,7 @@ Create a file `./config.json`:
       "method": "get",
       "path": "/index.html",
       "matchType": "string",
-      "contentType": "text/html",
+      "contentType": "text/html"
       "inline": "<html><body><h1>my static content</h1></body></html>"
     }
   ]
