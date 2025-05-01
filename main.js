@@ -197,10 +197,20 @@ function serve({ host, port, conf }) {
           if (!!route.contentType) {
             app[method](path, async(req, res, next) => {
               res.setHeader('Content-Type', route.contentType);
+              if (!!route.headers) {
+                for (const key in route.headers) {
+                  res.setHeader(key, route.headers[key]);
+                }
+              }
               await handlerCache[route.handler][method](req, res, next);
             });
           } else {
             app[method](path, async(req, res, next) => {
+              if (!!route.headers) {
+                for (const key in route.headers) {
+                  res.setHeader(key, route.headers[key]);
+                }
+              }
               await handlerCache[route.handler][method](req, res, next);
             });
           }
@@ -258,6 +268,11 @@ function serve({ host, port, conf }) {
         console.info(`✅ registering ${routeType} route with index`, {endpoints,  contentType: route.contentType});
 
         app.get(listEndpoint, (req, res, next) => {
+          if (!!route.headers) {
+            for (const key in route.headers) {
+              res.setHeader(key, route.headers[key]);
+            }
+          }
           if (!!route.contentType) {
             res.setHeader('Content-Type', route.contentType);
           }
@@ -265,6 +280,11 @@ function serve({ host, port, conf }) {
         });
 
         app.get(itemEndpoint, (req, res, next) => {
+          if (!!route.headers) {
+            for (const key in route.headers) {
+              res.setHeader(key, route.headers[key]);
+            }
+          }
           if (!!route.contentType) {
             res.setHeader('Content-Type', route.contentType);
           }
@@ -283,6 +303,11 @@ function serve({ host, port, conf }) {
         });
 
         app.post(listEndpoint, (req, res, next) => {
+          if (!!route.headers) {
+            for (const key in route.headers) {
+              res.setHeader(key, route.headers[key]);
+            }
+          }
           const item = req.body;
           const key = varnames.map((varname) => item[varname]);
           const exists = !!index[key];
@@ -296,6 +321,11 @@ function serve({ host, port, conf }) {
         });
 
         app.patch(itemEndpoint, (req, res, next) => {
+          if (!!route.headers) {
+            for (const key in route.headers) {
+              res.setHeader(key, route.headers[key]);
+            }
+          }
           const modItem = req.body;
           const key = varnames.map((varname) => modItem[varname]);
           const exists = !!index[key];
@@ -311,6 +341,11 @@ function serve({ host, port, conf }) {
         });
 
         app.put(itemEndpoint, (req, res, next) => {
+          if (!!route.headers) {
+            for (const key in route.headers) {
+              res.setHeader(key, route.headers[key]);
+            }
+          }
           const item = req.body;
           const key = varnames.map((varname) => item[varname]);
           const exists = !!index[key];
@@ -324,6 +359,11 @@ function serve({ host, port, conf }) {
         });
 
         app.delete(itemEndpoint, (req, res, next) => {
+          if (!!route.headers) {
+            for (const key in route.headers) {
+              res.setHeader(key, route.headers[key]);
+            }
+          }
           const item = req.params;
           const key = varnames.map((varname) => item[varname]);
           const exists = !!index[key];
@@ -345,10 +385,23 @@ function serve({ host, port, conf }) {
             const stats = fs.statSync(staticPath);
             if (stats.isDirectory()) {
               console.info(`✅ registering static folder route`, {method, path: route.static});
-              app.use(
-                route.path,
-                express.static(staticPath)
-              );
+              if (!!route.headers) {
+                app.use(
+                  route.path,
+                  express.static(staticPath, {
+                    setHeaders: (res, filePath, stat) => {
+                      for (const key in route.headers) {
+                        res.setHeader(key, route.headers[key]);
+                      }
+                    },
+                  })
+                );
+              } else {
+                app.use(
+                  route.path,
+                  express.static(staticPath)
+                );
+              }
               return;
             } else {
               const raw = fs.readFileSync(staticPath);
@@ -400,6 +453,11 @@ function serve({ host, port, conf }) {
             }
           }
           const routeHandlerFunc = (req, res, next) => {
+            if (!!route.headers) {
+              for (const key in route.headers) {
+                res.setHeader(key, route.headers[key]);
+              }
+            }
             if (!!route.contentType) {
               res.setHeader('Content-Type', route.contentType);
             }

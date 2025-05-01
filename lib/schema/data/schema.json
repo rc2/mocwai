@@ -8,6 +8,17 @@
       "items": {
         "type": "object",
         "properties": {
+          "headers": {
+            "type": "object",
+            "properties": {
+              "headers": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "method": {
             "type": "string",
             "enum": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"]
