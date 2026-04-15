@@ -50,6 +50,7 @@
           {
             "if": {
               "not": {
+                "required": ["index"],
                 "properties": { "index": { "const": true } }
               }
             },
