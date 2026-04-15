@@ -1,6 +1,6 @@
 # mocwai
 
-**mocwai** is a quick mocking server for HTTP and Socket.IO. For dev, test, and prototyping.
+**mocwai** is a quick mocking server for HTTP, WebSocket, and Socket.IO. For dev, test, and prototyping.
 
 ## Rules
 
@@ -10,7 +10,7 @@
 
 ## Summary
 
-It operates off of a config file, supports serving static assets, inline data, supports automatic simple indexing of json/yaml data, as well as custom javascript handlers for more advanced use cases. Support for http and socket.io. Watches route for changes and reloads on change (using `--watch` switch).
+It operates off of a config file, supports serving static assets, inline data, supports automatic simple indexing of json/yaml data, as well as custom javascript handlers for more advanced use cases. Support for HTTP, raw WebSocket, and Socket.IO. Watches routes for changes and reloads on change (using `--watch` switch).
 
 ## JSON Schema
 
@@ -156,6 +156,27 @@ When executed in watch mode via `--watch`, all files referenced in "static" or "
 
 ---
 
+## Quick Run Down for WebSocket
+
+Raw WebSocket mocking routes connections by URL path:
+
+- Define a path (exact string, regex, or Express-style params)
+- Point to a handler file exporting any combination of lifecycle hooks
+- The handler receives the raw `ws.WebSocket` connection object directly — no protocol abstraction
+
+### Handler hooks
+
+| Hook | Signature | When it fires |
+|---|---|---|
+| `onOpen` | `(ws, req)` | Client connects. `req.params` is populated for `params` matchType routes. |
+| `onMessage` | `(ws, data, isBinary)` | Client sends a message. |
+| `onClose` | `(ws, code, reason)` | Connection closes. |
+| `onError` | `(ws, err)` | A socket error occurs. |
+
+All hooks are optional.
+
+---
+
 ## Quick Run Down for Socket.IO
 
 Socket.IO mocking supports inbound event handling:
@@ -193,7 +214,7 @@ Create a file `./config.json`:
       "method": "get",
       "path": "/index.html",
       "matchType": "string",
-      "contentType": "text/html"
+      "contentType": "text/html",
       "inline": "<html><body><h1>my static content</h1></body></html>"
     }
   ]
@@ -246,6 +267,64 @@ module.exports = {
 
 ### Connect and Emit
 Use a Socket.IO client to emit a `ping` event.
+
+---
+
+## Getting Started with WebSocket
+
+### Example Config
+```json
+{
+  "websocket": [
+    {
+      "path": "/ws/echo",
+      "matchType": "string",
+      "handler": "./handlers/echo.js"
+    },
+    {
+      "path": "/ws/chat/:room",
+      "matchType": "params",
+      "handler": "./handlers/chat.js"
+    }
+  ]
+}
+```
+
+### Example Handler
+`handlers/echo.js`
+```js
+module.exports = {
+  onOpen: (ws) => {
+    ws.send('connected');
+  },
+  onMessage: (ws, data, isBinary) => {
+    ws.send(data, { binary: isBinary }); // echo back
+  },
+};
+```
+
+`handlers/chat.js` — using `req.params` from a `params` route:
+```js
+module.exports = {
+  onOpen: (ws, req) => {
+    ws.send(JSON.stringify({ joined: req.params.room }));
+  },
+  onMessage: (ws, data) => {
+    // broadcast to other clients in the same room...
+  },
+};
+```
+
+### Connect
+Use any standard WebSocket client:
+```bash
+# wscat (npm install -g wscat)
+wscat -c ws://localhost:8080/ws/echo
+```
+
+Or the browser's native `WebSocket` API — no Socket.IO client required.
+
+> see *examples/web-socket*
 
 ---
 
