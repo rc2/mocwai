@@ -1,0 +1,9 @@
+{
+  "mochaExplorer.cwd": ".",
+  "mochaExplorer.files": "**/*test.js",
+  "mochaExplorer.timeout": 5000,
+  "mochaExplorer.ignore": [
+    "**/node_modules/**"
+  ],
+  "mochaExplorer.mochaPath": "node_modules/mocha"
+}
