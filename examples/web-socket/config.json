@@ -1,0 +1,28 @@
+{
+  "http": [
+    {
+      "method": "GET",
+      "path": "/",
+      "matchType": "string",
+      "contentType": "text/plain",
+      "inline": "mocwai websocket example\n\nroutes:\n  ws://localhost:8080/ws/echo          — echoes every message back\n  ws://localhost:8080/ws/chat/:room    — room-based broadcast chat\n  ws://localhost:8080/ws/ticker        — streams mock price ticks every second\n"
+    }
+  ],
+  "websocket": [
+    {
+      "path": "/ws/echo",
+      "matchType": "string",
+      "handler": "handlers/echo.js"
+    },
+    {
+      "path": "/ws/chat/:room",
+      "matchType": "params",
+      "handler": "handlers/chat.js"
+    },
+    {
+      "path": "/ws/ticker",
+      "matchType": "string",
+      "handler": "handlers/ticker.js"
+    }
+  ]
+}

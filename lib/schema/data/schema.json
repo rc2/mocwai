@@ -107,6 +107,23 @@
           "required": ["handler"]
         }
       }
+    },
+    "websocket": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "handler"],
+        "additionalProperties": false,
+        "properties": {
+          "path": { "type": "string" },
+          "matchType": {
+            "type": "string",
+            "enum": ["string", "regex", "params"],
+            "default": "string"
+          },
+          "handler": { "type": "string" }
+        }
+      }
     }
   },
   "additionalProperties": false

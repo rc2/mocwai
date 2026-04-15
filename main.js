@@ -19,6 +19,8 @@ const packageJson = require(pathlib.join(__dirname, "package.json"));
 
 const { getVarsFromParamsPath, isText } = require("./lib/util");
 const validate = require('./lib/schema/validate');
+const { WebSocketServer } = require("ws");
+const { match: pathMatch } = require("path-to-regexp");
 
 const program = new Command();
 program
@@ -140,6 +142,57 @@ function serve({ host, port, conf }) {
   app.use(logger);
 
   const handlerCache = new Map();
+
+  const wss = new WebSocketServer({ noServer: true });
+  const wsMatchers = (conf.data.websocket || []).map((entry) => {
+    const handlerPath = pathlib.resolve(conf.folder, entry.handler);
+    if (!handlerCache[entry.handler]) {
+      delete require.cache[require.resolve(handlerPath)];
+      handlerCache[entry.handler] = require(handlerPath);
+    }
+    const handler = handlerCache[entry.handler];
+    const mt = entry.matchType || "string";
+    let matchFn;
+    if (mt === "regex") {
+      const re = new RegExp(entry.path);
+      matchFn = (pathname) => (re.test(pathname) ? {} : null);
+    } else if (mt === "params") {
+      const compiled = pathMatch(entry.path, { decode: decodeURIComponent });
+      matchFn = (pathname) => {
+        const result = compiled(pathname);
+        return result ? result.params : null;
+      };
+    } else {
+      matchFn = (pathname) => (pathname === entry.path ? {} : null);
+    }
+    return { handler, matchFn };
+  });
+
+  server.on("upgrade", (req, socket, head) => {
+    const pathname = new URL(req.url, "http://localhost").pathname;
+    for (const { handler, matchFn } of wsMatchers) {
+      const params = matchFn(pathname);
+      if (params !== null) {
+        req.params = params;
+        console.log(`websocket connection: ${pathname}`);
+        wss.handleUpgrade(req, socket, head, (ws) => {
+          if (typeof handler.onOpen === "function") handler.onOpen(ws, req);
+          if (typeof handler.onMessage === "function") {
+            ws.on("message", (data, isBinary) => handler.onMessage(ws, data, isBinary));
+          }
+          if (typeof handler.onClose === "function") {
+            ws.on("close", (code, reason) => handler.onClose(ws, code, reason));
+          }
+          if (typeof handler.onError === "function") {
+            ws.on("error", (err) => handler.onError(ws, err));
+          }
+        });
+        return;
+      }
+    }
+    // No websocket route matched — fall through to Socket.IO's upgrade listener
+  });
+
   const httpRoutes = conf.data.http || [];
 
   // integrity check
@@ -172,6 +225,16 @@ function serve({ host, port, conf }) {
       console.error(
         `only contentType=="application/json" is indexable; route index=${index}; route=${JSON.stringify(route)}`
       )
+      process.exit(-1);
+    }
+  });
+
+  // WebSocket handler integrity check
+  (conf.data.websocket || []).forEach((entry, index) => {
+    if (!fs.existsSync(pathlib.resolve(conf.folder, entry.handler))) {
+      console.error(
+        `handler path for websocket[${index}] does not exist: ${entry.handler}; route=${JSON.stringify(entry)}`
+      );
       process.exit(-1);
     }
   });
@@ -483,7 +546,7 @@ function serve({ host, port, conf }) {
 
       const isRegex = entry.matchType === "regex";
       const matcher = isRegex ? new RegExp(entry.event) : entry.event;
-      const handlerPath = pathlib.resolve(__dirname, "socket", entry.handler);
+      const handlerPath = pathlib.resolve(conf.folder, entry.handler);
       const handlerModule = require(handlerPath);
 
       socket.onAny((event, data) => {
@@ -497,7 +560,7 @@ function serve({ host, port, conf }) {
 
   const listener = server.listen(Number(port), host, () => {
     console.log(`mocwai server running on http://${host}:${port}`);
-    shell(io);
+    if (process.stdin.isTTY) shell(io);
   });
 
   return { server, app, io, listener };
@@ -536,6 +599,12 @@ function loadAndValidateConfig(configPath) {
     paths.push(...config.data.socket.map(route => {
       return !!route.handler ? pathlib.join(config.folder, route.handler) : undefined;
     }).filter(path=>!!path));
+  }
+  if (!!config.data.websocket) {
+    paths.push(...config.data.websocket
+      .filter(entry => !!entry.handler)
+      .map(entry => pathlib.join(config.folder, entry.handler))
+    );
   }
   config.paths = Array.from(new Set(paths));
 
@@ -593,4 +662,8 @@ function shell(io) {
   });
 }
 
-program.parse();
+if (require.main === module) {
+  program.parse();
+}
+
+module.exports = { serve, loadAndValidateConfig };
