@@ -2,12 +2,6 @@
 
 **mocwai** is a quick mocking server for HTTP, WebSocket, and Socket.IO. For dev, test, and prototyping.
 
-## Rules
-
-- Don't expose to bright light
-- Don't get it wet
-- Never feed after midnight
-
 ## Summary
 
 It operates off of a config file, supports serving static assets, inline data, supports automatic simple indexing of json/yaml data, as well as custom javascript handlers for more advanced use cases. Support for HTTP, raw WebSocket, and Socket.IO. Watches routes for changes and reloads on change (using `--watch` switch).
